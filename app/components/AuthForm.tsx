@@ -6,6 +6,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -38,8 +39,12 @@ const authFormSchema = (type: FormType) => {
 
 const AuthForm = ({type} : {type : FormType }) => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const formSchema = authFormSchema(type);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Get the callback URL from search params, default to home page
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -99,11 +104,11 @@ const AuthForm = ({type} : {type : FormType }) => {
             return;
           }
           
-          console.log("Sign-in successful, redirecting to homepage...");
+          console.log("Sign-in successful, redirecting to:", callbackUrl);
           toast.success("Signed in successfully");
           
-          // Force redirect to homepage
-          window.location.href = "/";
+          // Redirect to the original page or home page
+          window.location.href = callbackUrl;
         } catch (firebaseError: any) {
           console.error("Firebase Auth error:", firebaseError);
           throw firebaseError; // Re-throw to be caught by the outer catch block
