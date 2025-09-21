@@ -21,4 +21,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Configure auth settings
+auth.useDeviceLanguage();
+
 export { auth, db };

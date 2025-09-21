@@ -10,7 +10,7 @@ const AuthLayout = async ({ children }: { children: ReactNode }) => {
   }
   
   return (
-    <div className='auth-layout'>
+    <div className='auth-layout min-h-screen flex items-center justify-center bg-dark-100 pattern'>
       {children}
     </div>
   )
