@@ -24,7 +24,7 @@ export default function Home() {
 
       <section className="flex flex-col gap-6 mt-8 ml-2">
         <h2> Your interviews</h2>
-        <div className="interview-section">
+        <div className="interviews-section">
             {dummyInterviews.map((interview) => (
               <InterviewCard {...interview} key={interview.id} />
             ))}
@@ -35,7 +35,7 @@ export default function Home() {
       <section>
           <div className="flex flex-col gap-6 mt-8">
             <h2> Take an Interview</h2>
-            <div className="">
+            <div className="interviews-section">
             {dummyInterviews.map((interview) => (
               <InterviewCard {...interview} key={interview.id} />
             ))}

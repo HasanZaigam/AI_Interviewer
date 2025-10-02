@@ -25,7 +25,7 @@ const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: 
   const formattedDate = dayjs(createdAt || Date.now()).format("DD MMM YYYY");
   
   return (
-    <div className="card-border w-[360px] max-sm:w-full min-h-96p">
+    <div className="card-border w-full min-h-96p">
       <div className="card-interview">
         <div>
           <div className="absolute top-0 right-0 w-fit px-4 py-2 rounded-bl-lg bg-light-600">
