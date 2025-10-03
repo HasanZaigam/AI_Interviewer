@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import DisplayTechIcon from './DisplayTechIcon';
-
+// Interview card props
 interface InterviewCardProps {
   interviewId: string;
   userId: string;
