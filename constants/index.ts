@@ -1,5 +1,45 @@
-import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 import { z } from "zod";
+
+// Define Interview interface
+export interface Interview {
+  id: string;
+  userId: string;
+  role: string;
+  type: string;
+  techstack: string[];
+  level: string;
+  questions: string[];
+  finalized: boolean;
+  createdAt: string;
+}
+
+// Define CreateAssistantDTO interface locally to avoid client-side dependency
+export interface CreateAssistantDTO {
+  name: string;
+  firstMessage: string;
+  transcriber: {
+    provider: string;
+    model: string;
+    language: string;
+  };
+  voice: {
+    provider: string;
+    voiceId: string;
+    stability: number;
+    similarityBoost: number;
+    speed: number;
+    style: number;
+    useSpeakerBoost: boolean;
+  };
+  model: {
+    provider: string;
+    model: string;
+    messages: Array<{
+      role: string;
+      content: string;
+    }>;
+  };
+}
 
 export const mappings = {
   "react.js": "react",
