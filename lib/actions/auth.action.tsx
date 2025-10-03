@@ -27,7 +27,7 @@ type User = {
     id: string;
     name: string;
     email: string;
-    [key: string]: any;
+    [key: string]: unknown;
 };
 
 export async function signUp(params: SignUpParams) {
@@ -51,10 +51,10 @@ export async function signUp(params: SignUpParams) {
             success: true,
             message: 'Account created successfully. Please sign in.'
         }
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('Error creating a user', e);
 
-        if(e.code === 'auth/email-already-exists') {
+        if(e && typeof e === 'object' && 'code' in e && e.code === 'auth/email-already-exists') {
             return {
                 success: false,
                 message: 'This email is already in use.'
@@ -113,17 +113,22 @@ export async function signInWithGoogle(params: GoogleSignInParams) {
             success: true,
             message: 'Successfully signed in with Google.'
         }
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('Error with Google sign-in:', e);
+        
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+        const errorCode = e && typeof e === 'object' && 'code' in e ? e.code : 'unknown';
+        const errorStack = e instanceof Error ? e.stack : 'No stack trace';
+        
         console.error('Error details:', {
-            message: e.message,
-            code: e.code,
-            stack: e.stack
+            message: errorMessage,
+            code: errorCode,
+            stack: errorStack
         });
 
         return {
             success: false,
-            message: `Failed to sign in with Google: ${e.message}`
+            message: `Failed to sign in with Google: ${errorMessage}`
         }
     }
 }
@@ -148,7 +153,7 @@ export async function setSessionCookie(idToken: string) {
             sameSite: 'lax'
         })
         console.log('Cookie set successfully');
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error setting session cookie:', error);
         throw error;
     }
@@ -171,8 +176,15 @@ export async function getCurrentUser(): Promise<User | null> {
             name: decodedClaims.name || '',
             email: decodedClaims.email || '',
         } as User;
-    } catch (e) {
+    } catch (e: unknown) {
         console.log('Error getting current user:', e)
+        
+        // Handle network connectivity issues
+        if (e instanceof Error && e.message.includes('ENOTFOUND')) {
+            console.error('Network error: Cannot reach Google APIs. Check internet connection and DNS resolution.');
+            return null;
+        }
+        
         return null;
     }
 }

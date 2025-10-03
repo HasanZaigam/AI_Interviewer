@@ -59,22 +59,27 @@ const GoogleAuthButton = () => {
       } else {
         toast.error(response.message || "Failed to sign in with Google")
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Google sign-in error:", error)
       
       // Handle specific Google auth errors
-      if (error.code === 'auth/popup-closed-by-user') {
-        toast.error("Sign-in was cancelled. Please try again.")
-      } else if (error.code === 'auth/popup-blocked') {
-        toast.error("Popup was blocked. Please allow popups and try again.")
-      } else if (error.code === 'auth/network-request-failed') {
-        toast.error("Network error. Please check your connection and try again.")
-      } else if (error.code === 'auth/unauthorized-domain') {
-        toast.error("Domain not authorized. Please contact support.")
-      } else if (error.code === 'auth/operation-not-allowed') {
-        toast.error("Google sign-in is not enabled. Please contact support.")
+      if (error && typeof error === 'object' && 'code' in error) {
+        const authError = error as { code: string; message?: string }
+        if (authError.code === 'auth/popup-closed-by-user') {
+          toast.error("Sign-in was cancelled. Please try again.")
+        } else if (authError.code === 'auth/popup-blocked') {
+          toast.error("Popup was blocked. Please allow popups and try again.")
+        } else if (authError.code === 'auth/network-request-failed') {
+          toast.error("Network error. Please check your connection and try again.")
+        } else if (authError.code === 'auth/unauthorized-domain') {
+          toast.error("Domain not authorized. Please contact support.")
+        } else if (authError.code === 'auth/operation-not-allowed') {
+          toast.error("Google sign-in is not enabled. Please contact support.")
+        } else {
+          toast.error(authError.message || "Failed to sign in with Google")
+        }
       } else {
-        toast.error(error.message || "Failed to sign in with Google")
+        toast.error("Failed to sign in with Google")
       }
     } finally {
       setIsLoading(false)

@@ -6,9 +6,16 @@ import { getCurrentUser, signOut } from "@/lib/actions/auth.action"
 import { toast } from "sonner"
 import Image from "next/image"
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  photoURL?: string;
+}
+
 const UserAvatar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)

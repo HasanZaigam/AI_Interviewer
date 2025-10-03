@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { auth } from "@/firebase/client"
-import { onAuthStateChanged } from "firebase/auth"
+import { onAuthStateChanged, User } from "firebase/auth"
 
 const FirebaseTest = () => {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

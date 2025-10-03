@@ -17,9 +17,9 @@ const AuthDebugger = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       console.log("Sign up successful:", userCredential.user)
       toast.success("Account created successfully!")
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Sign up error:", error)
-      toast.error(`Sign up failed: ${error.message}`)
+      toast.error(`Sign up failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }
@@ -32,9 +32,9 @@ const AuthDebugger = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       console.log("Sign in successful:", userCredential.user)
       toast.success("Sign in successful!")
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Sign in error:", error)
-      toast.error(`Sign in failed: ${error.message}`)
+      toast.error(`Sign in failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }
