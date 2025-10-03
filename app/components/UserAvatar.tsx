@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import { getCurrentUser, signOut } from "@/lib/actions/auth.action"
 import { toast } from "sonner"
 import Image from "next/image"
@@ -19,7 +19,7 @@ const UserAvatar = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
+  // const router = useRouter()
 
   // Fetch user data
   useEffect(() => {

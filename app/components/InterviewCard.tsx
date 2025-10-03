@@ -17,10 +17,12 @@ interface InterviewCardProps {
 
 interface Feedback {
   createdAt?: string | Date;
+  totalScore?: number;
+  finalAssessment?: string;
 }
 
 const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: InterviewCardProps) => {
-  const feedback: Feedback | null = null;
+  const feedback = null as Feedback | null;
   const normalizedType = /mix/gi.test(type) ? "mixed" : type;
   const formattedDate = dayjs(createdAt || Date.now()).format("DD MMM YYYY");
   

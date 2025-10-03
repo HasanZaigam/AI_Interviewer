@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import { useSearchParams } from "next/navigation"
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 import { auth } from "@/firebase/client"
@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import Image from "next/image"
 
 const GoogleAuthButton = () => {
-  const router = useRouter()
+  // const router = useRouter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
 
