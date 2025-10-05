@@ -3,6 +3,10 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { getTechLogos } from '@/lib/utils';
 
+interface TechIconProps {
+  techStack: string[];
+}
+
 const DisplayTechIcon = async ({techStack} :TechIconProps) => {
     const techIcons = await getTechLogos(techStack);
   return (
