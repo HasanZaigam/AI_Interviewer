@@ -6,8 +6,10 @@ import { dummyInterviews } from "@/constants";
 
 export default function Home() {
   return (  
-    <div className="root-layout">
-      <section className="card-cta mt-20">
+    <>
+      {/* Full-width banner section */}
+      <section className="card-cta mt-10 mb-10mr-0 ml-0 w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-row blue-gradient-dark rounded-3xl px-16 py-6 items-center justify-between max-sm:px-4 mx-auto max-w-8xl w-full">
           <div className="flex flex-col gap-6 max-w-lg">
             <h1 className="text-4xl font-bold text-white mb-4">Get Interview Ready with AI Practice & Feedback</h1>
             <p className="text-light-100">
@@ -20,28 +22,31 @@ export default function Home() {
             </div>
           </div>
           <Image src="/robot.png" alt="hero-image" width={500} height={500} className="max-sm:hidden" />
-      </section>
-
-      <section className="flex flex-col gap-6 mt-8 ml-2">
-        <h2> Your interviews</h2>
-        <div className="interviews-section">
-            {dummyInterviews.map((interview) => (
-              <InterviewCard {...interview} interviewId={interview.id} key={interview.id} />
-            ))}
-
         </div>
       </section>
 
-      <section>
-          <div className="flex flex-col gap-6 mt-8">
+      {/* Content sections aligned with banner */}
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-8xl w-full">
+          <section className="flex flex-col gap-6 mt-8">
+            <h2> Your interviews</h2>
+            <div className="interviews-section">
+                {dummyInterviews.map((interview) => (
+                  <InterviewCard {...interview} interviewId={interview.id} key={interview.id} />
+                ))}
+            </div>
+          </section>
+
+          <section className="flex flex-col gap-6 mt-20">
             <h2> Take an Interview</h2>
             <div className="interviews-section">
             {dummyInterviews.map((interview) => (
               <InterviewCard {...interview} interviewId={interview.id} key={interview.id} />
             ))}
             </div>
-          </div>
-      </section>
-    </div>
+          </section>
+        </div>
+      </div>
+    </>
   ); 
 }
