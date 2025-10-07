@@ -22,7 +22,7 @@
 //         'what yours name?',
 //         'My name is John Doe, nice to meet you!'
 //     ];
-//     const lastMessage = message[message.length - 1];
+//     const lastestMessage = message[message.length - 1];
     
 //     return (
 //         <>
@@ -79,9 +79,11 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { vapi } from "@/lib/vapi.sdk";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -91,36 +93,105 @@ enum CallStatus {
 }
 
 interface AgentProps {
-  userName: string;
+  userName?: string;
+  userId?: string;
+  type?: string;
 }
 
-const Agents = ({ userName }: AgentProps) => {
+type VapiMessage = {
+  type: string;
+  transcriptType?: string;
+  role: 'user' | 'system' | 'assistant';
+  transcript?: string;
+};
+
+interface savedMessage {
+  role: 'user' | 'system' | 'assistant';
+  content: string;
+}
+
+const Agents = ({ userName, userId, type }: AgentProps) => {
+  const router = useRouter();
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
-  // speaking when active (you can replace with real VAD later)
-  const isSpeaking = callStatus === CallStatus.ACTIVE;
+  const [message, setMessage] = useState<savedMessage[]>([]);
+  
 
-  const message = [
-    "what yours name?",
-    "My name is John Doe, nice to meet you!",
-  ];
-  const lastMessage = message[message.length - 1];
+  useEffect(() =>{
 
-  // Handlers to change call state
-  const startCall = () => {
-    // Simulate connecting -> active
+    const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
+    const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+
+    const onMessage = (message: VapiMessage) =>{
+      if(message.type === 'transcript' && message.transcriptType === 'final'){
+        const newMessage = {role: message.role, content: message.transcript ?? ''}
+
+        setMessage((prev) => [...prev, newMessage]);
+      }
+    }
+
+    const onSpeechStart = () => setIsSpeaking(true);
+    const onSpeechEnd = () => setIsSpeaking(false);
+    const onError = (error: Error) => console.log('Error',error);
+
+    vapi.on('call-start', onCallStart);
+    vapi.on('call-end', onCallEnd);
+    vapi.on('message', onMessage);
+    vapi.on('speech-start', onSpeechStart);
+    vapi.on('speech-end', onSpeechEnd);
+    vapi.on('error', onError);
+
+    return () => {
+      vapi.off('call-start', onCallStart);
+      vapi.off('call-end', onCallEnd);
+      vapi.off('message', onMessage);
+      vapi.off('speech-start', onSpeechStart);
+      vapi.off('speech-end', onSpeechEnd);
+      vapi.off('error', onError);
+    }
+  }, []);
+
+  useEffect(() =>{
+    if(callStatus === CallStatus.FINISHED) router.push('/');
+
+  },[message, callStatus, type, userId]);
+
+  const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
-    // simulate small delay for connecting (replace with real connection logic)
-    setTimeout(() => {
-      setCallStatus(CallStatus.ACTIVE);
-    }, 800);
-  };
-
-  const endCall = () => {
-    // End the call
+    await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID ?? '', {
+      variableValues: {
+        username: userName ?? '',
+        userid: userId ?? '',
+      },
+    });
+  }
+  const handleDisconnect = async () => {
     setCallStatus(CallStatus.FINISHED);
-    // optionally reset after a short delay
-    setTimeout(() => setCallStatus(CallStatus.INACTIVE), 700);
-  };
+    vapi.stop();
+
+  }
+
+  
+  const lastestMessage = message[message.length - 1]?.content;
+  const isCallInactiveOrFinished = callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
+
+
+  // // Handlers to change call state
+  // const startCall = () => {
+  //   // Simulate connecting -> active
+  //   setCallStatus(CallStatus.CONNECTING);
+  //   // simulate small delay for connecting (replace with real connection logic)
+  //   setTimeout(() => {
+  //     setCallStatus(CallStatus.ACTIVE);
+  //   }, 800);
+  // };
+
+  // const endCall = () => {
+  //   // End the call
+  //   setCallStatus(CallStatus.FINISHED);
+  //   // optionally reset after a short delay
+  //   setTimeout(() => setCallStatus(CallStatus.INACTIVE), 700);
+  // };
 
   return (
     <>
@@ -157,13 +228,13 @@ const Agents = ({ userName }: AgentProps) => {
         <div className="transcript-border">
           <div className="transcript">
             <p
-              key={lastMessage}
+              key={lastestMessage}
               className={cn(
                 "transition-opacity duration-500 opacity-0",
                 "animate-fadeIn opacity-100"
               )}
             >
-              {lastMessage}
+              {lastestMessage}
             </p>
           </div>
         </div>
@@ -172,7 +243,7 @@ const Agents = ({ userName }: AgentProps) => {
       <div className="w-full flex justify-center">
         {callStatus !== CallStatus.ACTIVE ? (
           <button
-            onClick={startCall}
+            onClick={handleCall}
             className="relative btn-call"
             aria-label="Start Call"
           >
@@ -182,7 +253,7 @@ const Agents = ({ userName }: AgentProps) => {
                 callStatus !== CallStatus.CONNECTING && "hidden"
               )}
             >
-              {callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED ? "Call" : ". . ."}
+              {isCallInactiveOrFinished ? "Call" : ". . ."}
             </span>
 
             {/* Visible text on button */}
@@ -191,7 +262,7 @@ const Agents = ({ userName }: AgentProps) => {
             </span>
           </button>
         ) : (
-          <button onClick={endCall} className="btn-disconnect" aria-label="End Call">
+          <button onClick={handleDisconnect} className="btn-disconnect" aria-label="End Call">
             End Call
           </button>
         )}
