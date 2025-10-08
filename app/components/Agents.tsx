@@ -113,6 +113,7 @@ interface savedMessage {
 const Agents = ({ userName, userId, type }: AgentProps) => {
   const router = useRouter();
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [message, setMessage] = useState<savedMessage[]>([]);
   
@@ -127,6 +128,15 @@ const Agents = ({ userName, userId, type }: AgentProps) => {
         const newMessage = {role: message.role, content: message.transcript ?? ''}
 
         setMessage((prev) => [...prev, newMessage]);
+      }
+      
+      // Detect user speaking based on transcript events
+      if(message.type === 'transcript' && message.role === 'user'){
+        if(message.transcriptType === 'partial' || message.transcriptType === 'final'){
+          setIsUserSpeaking(true);
+          // Reset user speaking state after a short delay
+          setTimeout(() => setIsUserSpeaking(false), 1000);
+        }
       }
     }
 
@@ -210,15 +220,18 @@ const Agents = ({ userName, userId, type }: AgentProps) => {
           <h3>AI Interviewer</h3>
         </div>
 
-        <div className="card-border">
+        <div className={cn("card-border", callStatus !== CallStatus.INACTIVE && "call-active-border")}> 
           <div className="card-content">
-            <Image
-              src="/user-avatar.png"
-              alt="avatar"
-              width={120}
-              height={120}
-              className="object-cover"
-            />
+            <div className="user-avatar">
+              <Image
+                src="/user-avatar.png"
+                alt="avatar"
+                width={120}
+                height={120}
+                className="object-cover rounded-full"
+              />
+              {isUserSpeaking && <span className="animate-speak" />}
+            </div>
             <h3>{userName}</h3>
           </div>
         </div>
